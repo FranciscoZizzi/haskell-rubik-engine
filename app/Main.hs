@@ -1,6 +1,6 @@
 module Main (main) where
 
-import Lib
+import Cube.Data
 
 main :: IO ()
-main = someFunc
+main = print (getLeftFace defaultCube)

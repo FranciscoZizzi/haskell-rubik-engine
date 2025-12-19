@@ -2,12 +2,12 @@ module Cube.Data (
   Cube(..),
   defaultCube,
   createCube,
-  getFrontSide,
-  getLeftSide,
-  getRightSide,
-  getDownSide,
-  getUpSide,
-  getBackSide
+  getFrontFace,
+  getLeftFace,
+  getRightFace,
+  getDownFace,
+  getUpFace,
+  getBackFace
 ) where
 
 import Data.Vector
@@ -25,23 +25,23 @@ createCube size = Cube (fromList facesList) size
   where
     facesList = [y | x <- [0..5], y <- Prelude.replicate (size * size) x]
 
-getNthSide :: Cube -> Int -> Vector Int
-getNthSide (Cube f fs) n = slice (n * fs * fs) (fs * fs) f
+getNthFace :: Cube -> Int -> Vector Int
+getNthFace (Cube f fs) n = slice (n * fs * fs) (fs * fs) f
 
-getFrontSide :: Cube -> Vector Int
-getFrontSide cube = getNthSide cube 0
+getFrontFace :: Cube -> Vector Int
+getFrontFace cube = getNthFace cube 0
 
-getRightSide :: Cube -> Vector Int
-getRightSide cube = getNthSide cube 1
+getRightFace :: Cube -> Vector Int
+getRightFace cube = getNthFace cube 1
 
-getBackSide :: Cube -> Vector Int
-getBackSide cube = getNthSide cube 2
+getBackFace :: Cube -> Vector Int
+getBackFace cube = getNthFace cube 2
 
-getLeftSide :: Cube -> Vector Int
-getLeftSide cube = getNthSide cube 3
+getLeftFace :: Cube -> Vector Int
+getLeftFace cube = getNthFace cube 3
 
-getUpSide :: Cube -> Vector Int
-getUpSide cube = getNthSide cube 4
+getUpFace :: Cube -> Vector Int
+getUpFace cube = getNthFace cube 4
 
-getDownSide :: Cube -> Vector Int
-getDownSide cube = getNthSide cube 5
+getDownFace :: Cube -> Vector Int
+getDownFace cube = getNthFace cube 5
