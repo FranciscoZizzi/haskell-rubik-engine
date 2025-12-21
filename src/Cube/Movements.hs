@@ -16,16 +16,23 @@ module Cube.Movements (
   yClockwise,
   yCounterClockwise,
   zClockwise,
-  zCounterClockwise
+  zCounterClockwise,
+  Movement,
+  applyMovements
 ) where
 
 import Cube.Data (Cube(..))
-import Data.Vector
+import qualified Data.Vector as Vector
+
+type Movement = Cube -> Either String Cube
+
+applyMovements :: [Cube -> Either String Cube] -> Cube -> Either String Cube
+applyMovements movements startCube = foldl (>>=) (Right startCube) movements
 
 executeMove :: Cube -> [Int] -> Either String Cube
 executeMove (Cube f 3) swapPositions = Right (Cube result 3)
   where
-    result = fromList [f ! x | x <- swapPositions]
+    result = Vector.fromList [f Vector.! x | x <- swapPositions]
 executeMove (Cube _ _) _ = Left "Movements for cubes of size != 3 not supported"
 
 -- F'
