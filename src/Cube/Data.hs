@@ -2,6 +2,7 @@ module Cube.Data (
   Cube(..),
   defaultCube,
   createCube,
+  getStickerColor,
   getFrontFace,
   getLeftFace,
   getRightFace,
@@ -24,6 +25,9 @@ createCube :: Int -> Cube
 createCube size = Cube (fromList facesList) size
   where
     facesList = [y | x <- [0..5], y <- Prelude.replicate (size * size) x]
+
+getStickerColor :: Cube -> Int -> Int
+getStickerColor cube stickerPosition = faces cube ! stickerPosition
 
 getNthFace :: Cube -> Int -> Vector Int
 getNthFace (Cube f fs) n = slice (n * fs * fs) (fs * fs) f
