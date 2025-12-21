@@ -8,7 +8,7 @@ colorMap :: Map.Map Int SGR
 colorMap = Map.fromList [
   (0, SetColor Foreground Vivid Red), 
   (1, SetColor Foreground Vivid Green), 
-  (2, SetColor Foreground Dull Yellow), 
+  (2, SetPaletteColor Foreground 166), 
   (3, SetColor Foreground Vivid Blue), 
   (4, SetColor Foreground Vivid White), 
   (5, SetColor Foreground Vivid Yellow)]
