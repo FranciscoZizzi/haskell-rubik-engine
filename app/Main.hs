@@ -5,7 +5,11 @@ import UI.CMD
 import Cube.Movements
 
 main :: IO ()
-main = printCube cube
+main = mainLoop defaultCube
+
+
+thing :: IO ()
+thing = printCube cube
   where
     cube = case applyMovements crossPattern defaultCube of
       Right result -> result
