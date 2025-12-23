@@ -88,12 +88,12 @@ leftCounterClockwise cube = executeMove cube swapPositions
 middleClockwise :: Cube -> Either String Cube
 middleClockwise cube = executeMove cube swapPositions
   where
-    swapPositions = [0,37,2,3,40,5,6,43,8,9,10,11,12,13,14,15,16,17,26,46,24,23,49,21,20,52,18,27,28,29,30,31,32,33,34,35,36,19,38,39,22,41,42,25,44,45,1,47,48,4,50,51,7,53]
+    swapPositions = [0,37,2,3,40,5,6,43,8,9,10,11,12,13,14,15,16,17,18,46,20,21,49,23,24,52,26,27,28,29,30,31,32,33,34,35,36,19,38,39,22,41,42,25,44,45,1,47,48,4,50,51,7,53]
 
 middleCounterClockwise :: Cube -> Either String Cube
 middleCounterClockwise cube = executeMove cube swapPositions
   where
-    swapPositions = [0,46,2,3,49,5,6,52,8,9,10,11,12,13,14,15,16,17,26,37,24,23,40,21,20,43,18,27,28,29,30,31,32,33,34,35,36,1,38,39,4,41,42,7,44,45,19,47,48,22,50,51,25,53]
+    swapPositions = [0,46,2,3,49,5,6,52,8,9,10,11,12,13,14,15,16,17,18,37,20,21,40,23,24,43,26,27,28,29,30,31,32,33,34,35,36,1,38,39,4,41,42,7,44,45,19,47,48,22,50,51,25,53]
 
 xClockwise :: Cube -> Either String Cube
 xClockwise cube = executeMove cube swapPositions
