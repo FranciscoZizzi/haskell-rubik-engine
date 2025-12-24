@@ -27,7 +27,6 @@ library
   exposed-modules:
       Cube.Data
       Cube.Movements
-      Helper.MovementGeneration
       UI.CMD
   other-modules:
       Paths_haskell_rubik_engine

@@ -1,51 +1,55 @@
-module Cube.Data (
-  Cube(..),
-  defaultCube,
-  createCube,
-  getStickerColor,
-  getFrontFace,
-  getLeftFace,
-  getRightFace,
-  getDownFace,
-  getUpFace,
-  getBackFace
-) where
+module Cube.Data () where
 
-import Data.Vector
+import qualified Data.Map as Map
+
+type Movement = (
+  (Int, Int, Int),  -- Initial position
+  (Int, Int, Int),  -- Final position
+  [Int],            -- Final orientation
+  [Int])            -- Final sticker rotations
 
 data Cube = Cube {
-  faces :: Vector Int,
-  faceSize :: Int
+  pieces :: Map.Map (Int, Int, Int) Piece,
+  movements :: Map.Map String [Movement],
+  winState :: [((Int, Int, Int), Piece)],
+  isRotationSensitive :: Bool -- Determines if the solved state takes in consideration the sticker rotations
 }
 
-defaultCube :: Cube
-defaultCube = createCube 3
+data Piece = Piece {
+  stickers :: [Sticker],
+  orientation :: [Int]
+} deriving Eq
 
-createCube :: Int -> Cube
-createCube size = Cube (fromList facesList) size
+data Sticker = Sticker {
+  stickerId :: Int,
+  rotation :: Int
+} deriving Eq
+
+newCube :: Map.Map (Int, Int, Int) Piece -> Map.Map String [Movement] -> Bool -> Either String Cube
+newCube _pieces _movements _isRotationSensitive = if all (`isValidMovements` _pieces) (Map.elems _movements)
+  then Right (Cube _pieces _movements _winState _isRotationSensitive)
+  else Left "Invalid Movements"
   where
-    facesList = [y | x <- [0..5], y <- Prelude.replicate (size * size) x]
+    _winState = Map.assocs _pieces
 
-getStickerColor :: Cube -> Int -> Int
-getStickerColor cube stickerPosition = faces cube ! stickerPosition
+isValidMovements :: [Movement] -> Map.Map (Int, Int, Int) Piece -> Bool
+isValidMovements _movements _pieces = validPositions
+  where
+    validPositions = all (\(from, to, _, _) -> Map.member from _pieces && Map.member to _pieces) _movements
 
-getNthFace :: Cube -> Int -> Vector Int
-getNthFace (Cube f fs) n = slice (n * fs * fs) (fs * fs) f
+isSolved :: Cube -> Bool
+isSolved cube = all (\(position, piece) -> compareFunction piece (cubePieces Map.! position)) cubeWinState
+  where
+    compareFunction = if isRotationSensitive cube then isEqualPiece else isPartiallyEqualPiece
+    cubePieces = pieces cube
+    cubeWinState = winState cube
 
-getFrontFace :: Cube -> Vector Int
-getFrontFace cube = getNthFace cube 0
+isEqualPiece :: Piece -> Piece -> Bool
+isEqualPiece p1 p2 = p1 == p2
 
-getRightFace :: Cube -> Vector Int
-getRightFace cube = getNthFace cube 1
-
-getBackFace :: Cube -> Vector Int
-getBackFace cube = getNthFace cube 2
-
-getLeftFace :: Cube -> Vector Int
-getLeftFace cube = getNthFace cube 3
-
-getUpFace :: Cube -> Vector Int
-getUpFace cube = getNthFace cube 4
-
-getDownFace :: Cube -> Vector Int
-getDownFace cube = getNthFace cube 5
+isPartiallyEqualPiece :: Piece -> Piece -> Bool
+isPartiallyEqualPiece p1 p2 = equalOrientations && equalStickerIds
+  where
+    equalOrientations = orientation p1 == orientation p2
+    equalStickerIds = getStickerIds p1 == getStickerIds p2
+    getStickerIds piece = map stickerId (stickers piece)
