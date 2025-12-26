@@ -1,6 +1,11 @@
-module Cube.Data () where
+module Cube.Data (
+  Cube, Piece, Sticker, Movement,
+  pieces, movementsMap, stickers, orientation, stickerId, rotation,
+  newCube, isSolved, executeMovement
+) where
 
 import qualified Data.Map as Map
+import qualified Data.List as List
 
 type Movement = (
   (Int, Int, Int),  -- Initial position
@@ -10,7 +15,7 @@ type Movement = (
 
 data Cube = Cube {
   pieces :: Map.Map (Int, Int, Int) Piece,
-  movements :: Map.Map String [Movement],
+  movementsMap :: Map.Map String [Movement],
   winState :: [((Int, Int, Int), Piece)],
   isRotationSensitive :: Bool -- Determines if the solved state takes in consideration the sticker rotations
 }
@@ -26,16 +31,24 @@ data Sticker = Sticker {
 } deriving Eq
 
 newCube :: Map.Map (Int, Int, Int) Piece -> Map.Map String [Movement] -> Bool -> Either String Cube
-newCube _pieces _movements _isRotationSensitive = if all (`isValidMovements` _pieces) (Map.elems _movements)
-  then Right (Cube _pieces _movements _winState _isRotationSensitive)
+newCube _pieces _movementsMap _isRotationSensitive = if all (`isValidMovements` _pieces) (Map.elems _movementsMap)
+  then Right (Cube _pieces _movementsMap _winState _isRotationSensitive)
   else Left "Invalid Movements"
   where
     _winState = Map.assocs _pieces
 
-isValidMovements :: [Movement] -> Map.Map (Int, Int, Int) Piece -> Bool
-isValidMovements _movements _pieces = validPositions
+executeMovement :: Cube -> String -> Either String Cube
+executeMovement cube movementName = case movementResult of 
+  Nothing -> Left ("Invalid movement: "++movementName)
+  Just movementSteps -> Right (Cube (newPieces movementSteps) (movementsMap cube) (winState cube) (isRotationSensitive cube))
   where
-    validPositions = all (\(from, to, _, _) -> Map.member from _pieces && Map.member to _pieces) _movements
+    cubePieces = pieces cube
+    movementResult = Map.lookup movementName (movementsMap cube)
+    newPieces = List.foldl' updatePieceAndInsert cubePieces
+    updatePieceAndInsert acc (initialPos, finalPos, newOrientation, newRotation) = 
+      let pieceToUpdate = acc Map.! initialPos
+          updatedPiece = updatePiece pieceToUpdate newOrientation newRotation
+      in Map.insert finalPos updatedPiece acc
 
 isSolved :: Cube -> Bool
 isSolved cube = all (\(position, piece) -> compareFunction piece (cubePieces Map.! position)) cubeWinState
@@ -43,6 +56,12 @@ isSolved cube = all (\(position, piece) -> compareFunction piece (cubePieces Map
     compareFunction = if isRotationSensitive cube then isEqualPiece else isPartiallyEqualPiece
     cubePieces = pieces cube
     cubeWinState = winState cube
+
+-- Utils
+updatePiece :: Piece -> [Int] -> [Int] -> Piece
+updatePiece piece newOrientation newRotations = Piece newStickers newOrientation
+  where 
+     newStickers = zipWith (Sticker . stickerId) (stickers piece) newRotations
 
 isEqualPiece :: Piece -> Piece -> Bool
 isEqualPiece p1 p2 = p1 == p2
@@ -53,3 +72,8 @@ isPartiallyEqualPiece p1 p2 = equalOrientations && equalStickerIds
     equalOrientations = orientation p1 == orientation p2
     equalStickerIds = getStickerIds p1 == getStickerIds p2
     getStickerIds piece = map stickerId (stickers piece)
+
+isValidMovements :: [Movement] -> Map.Map (Int, Int, Int) Piece -> Bool
+isValidMovements _movementsMap _pieces = validPositions
+  where
+    validPositions = all (\(from, to, _, _) -> Map.member from _pieces && Map.member to _pieces) _movementsMap
