@@ -24,6 +24,7 @@ dependencies:
 - vector
 - ansi-terminal
 - containers
+- hspec
 
 ghc-options:
 - -Wall

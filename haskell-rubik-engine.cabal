@@ -38,6 +38,7 @@ library
       ansi-terminal
     , base >=4.7 && <5
     , containers
+    , hspec
     , vector
   default-language: Haskell2010
 
@@ -55,6 +56,7 @@ executable haskell-rubik-engine-exe
     , base >=4.7 && <5
     , containers
     , haskell-rubik-engine
+    , hspec
     , vector
   default-language: Haskell2010
 
@@ -73,5 +75,6 @@ test-suite haskell-rubik-engine-test
     , base >=4.7 && <5
     , containers
     , haskell-rubik-engine
+    , hspec
     , vector
   default-language: Haskell2010

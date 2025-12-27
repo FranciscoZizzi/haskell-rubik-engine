@@ -1,6 +1,6 @@
 module Cube.Data (
-  Cube, Sticker, Movement, Face(..), 
-  pieces, movementsMap, orientation, stickerId, rotation,
+  Cube, Sticker(..), Movement, Face(..), 
+  pieces, movementsMap,
   newCube, isSolved, executeMovement
 ) where
 
@@ -18,15 +18,15 @@ data Cube = Cube {
   movementsMap :: Map.Map String [Movement],
   winState :: [((Int, Int, Int), [Sticker])],
   isRotationSensitive :: Bool -- Determines if the solved state takes in consideration the sticker rotations
-}
+} deriving (Show, Eq)
 
 data Sticker = Sticker {
   stickerId :: Int,
   orientation:: Face,
   rotation :: Int
-} deriving (Eq, Ord)
+} deriving (Show, Eq, Ord)
 
-data Face = F | B | L | R | D deriving (Eq, Ord, Enum)
+data Face = F | B | L | R | D | U deriving (Show, Eq, Ord, Enum)
 
 newCube :: Map.Map (Int, Int, Int) [Sticker] -> Map.Map String [Movement] -> Bool -> Either String Cube
 newCube _pieces _movementsMap _isRotationSensitive = if all (`isValidMovements` _pieces) (Map.elems _movementsMap)
@@ -44,7 +44,7 @@ executeMovement cube movementName = case movementResult of
     movementResult = Map.lookup movementName (movementsMap cube)
     newPieces = List.foldl' updatePieceAndInsert cubePieces
     updatePieceAndInsert acc (initialPos, finalPos, newOrientation, newRotation) = 
-      let pieceToUpdate = acc Map.! initialPos
+      let pieceToUpdate = cubePieces Map.! initialPos
           updatedPiece = updatePiece pieceToUpdate newOrientation newRotation
       in Map.insert finalPos updatedPiece acc
 
