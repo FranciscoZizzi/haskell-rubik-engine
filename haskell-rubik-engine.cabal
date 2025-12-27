@@ -26,8 +26,7 @@ source-repository head
 library
   exposed-modules:
       Cube.Data
-      Cube.Movements
-      UI.CMD
+      Cube.DefaultCubes
   other-modules:
       Paths_haskell_rubik_engine
   autogen-modules:
