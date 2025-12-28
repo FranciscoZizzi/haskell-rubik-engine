@@ -5,6 +5,7 @@ module Cube.Data (
 ) where
 
 import qualified Data.Map as Map
+import qualified Data.Bifunctor
 import qualified Data.List as List
 
 type Movement = (
@@ -97,8 +98,11 @@ instance Eq Cube where
       equalPieces = 
         Map.size pieces1 == Map.size pieces2 &&
         (normalizePieces pieces1 == normalizePieces pieces2)
-      equalMovements = movementsMap1 == movementsMap2
-      equalWinState = winState1 == winState2
+      equalMovements = normalizeMovements movementsMap1 == normalizeMovements movementsMap2
+      equalWinState = normalizeWinState winState1 == normalizeWinState winState2
       equalRotationSensitivity = isRotationSensitive1 == isRotationSensitive2
+
       normalizePieces = Map.map List.sort
+      normalizeMovements = Map.map (map (\(f, t, ori, rot) -> (f, t, List.sort ori, List.sort rot)))
+      normalizeWinState = map (Data.Bifunctor.second List.sort)
 
