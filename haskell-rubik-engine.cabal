@@ -27,18 +27,25 @@ library
   exposed-modules:
       Cube.Data
       Cube.DefaultCubes
+      GUI.Main
   other-modules:
       Paths_haskell_rubik_engine
   autogen-modules:
       Paths_haskell_rubik_engine
   hs-source-dirs:
       src
+  default-extensions:
+      OverloadedStrings
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
-      ansi-terminal
-    , base >=4.7 && <5
+      base >=4.7 && <5
     , containers
+    , data-default
     , hspec
+    , lens
+    , monomer
+    , text
+    , text-show
     , vector
   default-language: Haskell2010
 
@@ -50,13 +57,19 @@ executable haskell-rubik-engine-exe
       Paths_haskell_rubik_engine
   hs-source-dirs:
       app
+  default-extensions:
+      OverloadedStrings
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      ansi-terminal
-    , base >=4.7 && <5
+      base >=4.7 && <5
     , containers
+    , data-default
     , haskell-rubik-engine
     , hspec
+    , lens
+    , monomer
+    , text
+    , text-show
     , vector
   default-language: Haskell2010
 
@@ -69,12 +82,18 @@ test-suite haskell-rubik-engine-test
       Paths_haskell_rubik_engine
   hs-source-dirs:
       test
+  default-extensions:
+      OverloadedStrings
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      ansi-terminal
-    , base >=4.7 && <5
+      base >=4.7 && <5
     , containers
+    , data-default
     , haskell-rubik-engine
     , hspec
+    , lens
+    , monomer
+    , text
+    , text-show
     , vector
   default-language: Haskell2010
