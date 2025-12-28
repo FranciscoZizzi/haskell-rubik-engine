@@ -18,7 +18,7 @@ data Cube = Cube {
   movementsMap :: Map.Map String [Movement],
   winState :: [((Int, Int, Int), [Sticker])],
   isRotationSensitive :: Bool -- Determines if the solved state takes in consideration the sticker rotations
-} deriving (Show, Eq)
+} deriving Show
 
 data Sticker = Sticker {
   stickerId :: Int,
@@ -89,3 +89,16 @@ isValidMovements :: [Movement] -> Map.Map (Int, Int, Int) [Sticker] -> Bool
 isValidMovements _movementsMap _pieces = validPositions
   where
     validPositions = all (\(from, to, _, _) -> Map.member from _pieces && Map.member to _pieces) _movementsMap
+
+instance Eq Cube where
+  Cube pieces1 movementsMap1 winState1 isRotationSensitive1 == Cube pieces2 movementsMap2 winState2 isRotationSensitive2 =
+    equalPieces && equalMovements && equalWinState && equalRotationSensitivity
+    where
+      equalPieces = 
+        Map.size pieces1 == Map.size pieces2 &&
+        (normalizePieces pieces1 == normalizePieces pieces2)
+      equalMovements = movementsMap1 == movementsMap2
+      equalWinState = winState1 == winState2
+      equalRotationSensitivity = isRotationSensitive1 == isRotationSensitive2
+      normalizePieces = Map.map List.sort
+
