@@ -1,7 +1,7 @@
 module Cube.Data (
   Cube, Sticker(..), Movement, Face(..), 
   pieces, movementsMap,
-  newCube, isSolved, executeMovement
+  newCube, isSolved, executeMovement, getFaceSize
 ) where
 
 import qualified Data.Map as Map
@@ -56,7 +56,18 @@ isSolved cube = all (\(position, piece) -> compareFunction piece (cubePieces Map
     cubePieces = pieces cube
     cubeWinState = winState cube
 
+getFaceSize :: Cube -> Int
+getFaceSize cube = getFaceSizeRec (Map.keys (pieces cube)) 0
+
 -- Utils --
+
+getFaceSizeRec :: [(Int, Int, Int)] -> Int -> Int
+getFaceSizeRec [] acc = acc
+getFaceSizeRec ((x,y,z):coords) acc = if maxVal > acc
+  then getFaceSizeRec coords maxVal
+  else getFaceSizeRec coords acc
+  where
+    maxVal = maximum [x,y,z]
 
 updatePiece :: [Sticker] -> [(Face, Face)] -> [(Face, Int)] -> [Sticker]
 updatePiece stickers newOrientations newRotations = updateStickers [] sortedStickers sortedOrientations sortedRotations
