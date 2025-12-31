@@ -29,6 +29,7 @@ library
       Cube.DefaultCubes
       GUI.Main
       GUI.Types
+      GUI.Widgets.CubeView
   other-modules:
       Paths_haskell_rubik_engine
   autogen-modules:
