@@ -7,7 +7,9 @@ import GUI.Types
 import qualified Data.Map as Map
 import qualified Data.List as List
 import Data.Maybe
+import Data.Either
 import Monomer
+import Data.Text (pack)
 
 import Cube.Data
 import Cube.DefaultCubes (defaultCube)
@@ -63,6 +65,11 @@ transform2dto3d (x, y) face faceSize = case face of
   R -> (2, x, faceSize-y)
   B -> (faceSize-x, 2, faceSize-y)
 
+getMovementButtons :: Cube -> WidgetNode AppModel AppEvent
+getMovementButtons c = vstack buttons
+  where
+    buttons = map (\move -> button (pack move) (ApplyMove move)) (Map.keys (movementsMap c))
+
 buildUI :: 
   WidgetEnv AppModel AppEvent
   -> AppModel
@@ -70,7 +77,8 @@ buildUI ::
 buildUI wenv model = widgetTree
   where
     widgetTree = hstack [
-      cubeView defaultCube (colorMap model)
+      cubeView (cube model) (colorMap model),
+      getMovementButtons (cube model)
       ] `styleBasic` [padding 10]
 
 handleEvent
@@ -81,7 +89,7 @@ handleEvent
   -> [AppEventResponse AppModel AppEvent]
 handleEvent wenv node model evt = case evt of
   AppInit -> []
-  UpdateCube -> [Model model]
+  ApplyMove move -> [Model (AppModel (fromRight defaultCube (executeMovement (cube model) move)) (colorMap model))]
 
 main :: IO ()
 main = do

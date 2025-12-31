@@ -13,7 +13,7 @@ data AppModel = AppModel {
 
 data AppEvent = 
   AppInit | 
-  UpdateCube
+  ApplyMove String
   deriving (Eq, Show)
 
 makeLenses 'AppModel
