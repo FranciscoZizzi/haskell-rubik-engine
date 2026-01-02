@@ -22,7 +22,7 @@ data Cube = Cube {
 } deriving Show
 
 data Sticker = Sticker {
-  stickerId :: Int,
+  colorId :: Int,
   orientation:: Face,
   rotation :: Int
 } deriving (Show, Eq, Ord)
@@ -80,22 +80,22 @@ updateStickers :: [Sticker] -> [Sticker] -> [(Face, Face)] -> [(Face, Int)] -> [
 updateStickers acc [] _ _ = acc
 updateStickers acc s [] [] = acc++s
 updateStickers acc (s:ss) (ori:oris) [] = if orientation s == fst ori
-  then updateStickers (Sticker (stickerId s) (snd ori) (rotation s):acc) ss oris []
+  then updateStickers (Sticker (colorId s) (snd ori) (rotation s):acc) ss oris []
   else updateStickers (s:acc) ss (ori:oris) []
 updateStickers acc (s:ss) [] (rot:rots) = if orientation s == fst rot
-  then updateStickers (Sticker (stickerId s) (orientation s) (snd rot):acc) ss [] rots
+  then updateStickers (Sticker (colorId s) (orientation s) (snd rot):acc) ss [] rots
   else updateStickers (s:acc) ss [] (rot:rots)
 updateStickers acc (s:ss) (ori:oris) (rot:rots) = case (orientation s == fst ori, orientation s == fst rot) of
   (False, False) -> updateStickers (s:acc) ss (ori:oris) (rot:rots)
-  (False, True) -> updateStickers (Sticker (stickerId s) (orientation s) (snd rot):acc) ss (ori:oris) rots
-  (True, False) -> updateStickers (Sticker (stickerId s) (snd ori) (rotation s):acc) ss oris (rot:rots)
-  (True, True) -> updateStickers (Sticker (stickerId s) (snd ori) (snd rot):acc) ss oris rots
+  (False, True) -> updateStickers (Sticker (colorId s) (orientation s) (snd rot):acc) ss (ori:oris) rots
+  (True, False) -> updateStickers (Sticker (colorId s) (snd ori) (rotation s):acc) ss oris (rot:rots)
+  (True, True) -> updateStickers (Sticker (colorId s) (snd ori) (snd rot):acc) ss oris rots
 
 isEqualPiece :: [Sticker] -> [Sticker] -> Bool
 isEqualPiece p1 p2 = List.sort p1 == List.sort p2
 
 isPartiallyEqualPiece :: [Sticker] -> [Sticker] -> Bool
-isPartiallyEqualPiece p1 p2 = all (\ (s1, s2) -> (stickerId s1 == stickerId s2) && (orientation s1 == orientation s2)) (zip (List.sort p1) (List.sort p2))
+isPartiallyEqualPiece p1 p2 = all (\ (s1, s2) -> (colorId s1 == colorId s2) && (orientation s1 == orientation s2)) (zip (List.sort p1) (List.sort p2))
 
 isValidMovements :: [Movement] -> Map.Map (Int, Int, Int) [Sticker] -> Bool
 isValidMovements _movementsMap _pieces = validPositions

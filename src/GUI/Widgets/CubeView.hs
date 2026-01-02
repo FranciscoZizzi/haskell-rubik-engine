@@ -47,7 +47,7 @@ cubeView c colorMap_ = box (
     getFaceSticker face = List.find (\s -> face == orientation s)
     getStickerColor maybeSticker = case maybeSticker of
       Nothing -> black 
-      Just s -> fromMaybe black (Map.lookup (stickerId s) colorMap_)
+      Just s -> fromMaybe black (Map.lookup (colorId s) colorMap_)
 
 transform2dto3d :: (Int, Int) -> Face -> Int -> (Int, Int, Int)
 transform2dto3d (x, y) face faceSize = case face of
