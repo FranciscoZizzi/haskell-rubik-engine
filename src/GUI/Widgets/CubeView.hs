@@ -7,40 +7,37 @@ import qualified Data.List as List
 import Data.Maybe
 import Monomer
 
-sticker :: (WidgetModel s, WidgetEvent e) => Color -> WidgetNode s e
-sticker color = box (box (label "")
+sticker :: (WidgetModel s, WidgetEvent e) => Double -> Color -> WidgetNode s e
+sticker stickerSize color = box (box (label "")
   `styleBasic` [
-    width 45,
-    height 45,
+    width actualStickerSize,
+    height actualStickerSize,
     bgColor color
-  ]) `styleBasic` [padding 2.5]
+  ]) `styleBasic` [padding stickerPadding]
+  where
+    actualStickerSize = stickerSize * 0.90
+    stickerPadding = stickerSize * 0.10 / 2
 
-cubeFace :: (WidgetModel s, WidgetEvent e) => [[Color]] -> WidgetNode s e
-cubeFace colors = box (
+cubeFace :: (WidgetModel s, WidgetEvent e) => [[Color]] -> Double -> WidgetNode s e
+cubeFace colors stickerSize = box (
   vgrid stickerGrids)
   where
-    stickerGrids = map (hgrid . map sticker) colors
+    stickerGrids = map (hgrid . map (sticker stickerSize)) colors
 
-cubeView :: (WidgetModel s, WidgetEvent e) => Cube -> Map.Map Int Color -> WidgetNode s e
-cubeView c colorMap_ = box (
+cubeView :: (WidgetModel s, WidgetEvent e) => Cube -> Map.Map Int Color -> Double -> WidgetNode s e
+cubeView c colorMap_ cubeWidth = box (
   hgrid [
-      vgrid [cubeFace lFace],
+      vgrid [cubeFace (getFaceColors L) stickerWidth],
       vgrid [
-        cubeFace uFace,
-        cubeFace fFace,
-        cubeFace dFace
+        cubeFace (getFaceColors U) stickerWidth,
+        cubeFace (getFaceColors F) stickerWidth,
+        cubeFace (getFaceColors D) stickerWidth
         ],
-      vgrid [cubeFace rFace],
-      vgrid [cubeFace bFace]
+      vgrid [cubeFace (getFaceColors R) stickerWidth],
+      vgrid [cubeFace (getFaceColors B) stickerWidth]
     ]
   )
   where
-    fFace = getFaceColors F
-    uFace = getFaceColors U
-    dFace = getFaceColors D
-    lFace = getFaceColors L
-    rFace = getFaceColors R
-    bFace = getFaceColors B
     getFaceColors face = [[getStickerColor $ getFaceSticker face $ getPiece (x,y) face | x <- [0..faceSize]] | y <- [0..faceSize]]
     faceSize = getFaceSize c
     getPiece coords face = pieces c Map.! transform2dto3d coords face faceSize
@@ -48,6 +45,7 @@ cubeView c colorMap_ = box (
     getStickerColor maybeSticker = case maybeSticker of
       Nothing -> black 
       Just s -> fromMaybe black (Map.lookup (colorId s) colorMap_)
+    stickerWidth = cubeWidth / fromIntegral (faceSize * 4)
 
 transform2dto3d :: (Int, Int) -> Face -> Int -> (Int, Int, Int)
 transform2dto3d (x, y) face faceSize = case face of
