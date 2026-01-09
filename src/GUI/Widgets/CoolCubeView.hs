@@ -44,20 +44,27 @@ drawScene = do
     setStrokeColor renderer orange
     setStrokeWidth renderer 2
   
-  draw3DLine (-0.5, 0.5, 1) (0.5, 0.5, 1)
-  draw3DLine (-0.5, -0.5, 1) (0.5, -0.5, 1)
-  draw3DLine (0.5, 0.5, 1) (0.5, -0.5, 1)
-  draw3DLine (-0.5, 0.5, 1) (-0.5, -0.5, 1)
+  let xzRotation = pi/3
+  let xyRotation = pi/6
+  let distanceFromScreen = 1.5 -- The distance from the center of the cube to the screen (z=0)
 
-  draw3DLine (-0.5, 0.5, 2) (0.5, 0.5, 2)
-  draw3DLine (-0.5, -0.5, 2) (0.5, -0.5, 2)
-  draw3DLine (0.5, 0.5, 2) (0.5, -0.5, 2)
-  draw3DLine (-0.5, 0.5, 2) (-0.5, -0.5, 2)
+  let rotatePoint point = rotateYZ (rotateXZ point xzRotation distanceFromScreen) xyRotation distanceFromScreen
+  let printRotated point1 point2 = draw3DLine (rotatePoint point1) (rotatePoint point2)
 
-  draw3DLine (0.5, 0.5, 1) (0.5, 0.5, 2)
-  draw3DLine (-0.5, 0.5, 1) (-0.5, 0.5, 2)
-  draw3DLine (0.5, -0.5, 1) (0.5, -0.5, 2)
-  draw3DLine (-0.5, -0.5, 1) (-0.5, -0.5, 2)
+  printRotated (-0.5, 0.5, 1) (0.5, 0.5, 1)
+  printRotated (-0.5, -0.5, 1) (0.5, -0.5, 1)
+  printRotated (0.5, 0.5, 1) (0.5, -0.5, 1)
+  printRotated (-0.5, 0.5, 1) (-0.5, -0.5, 1)
+
+  printRotated (-0.5, 0.5, 2) (0.5, 0.5, 2)
+  printRotated (-0.5, -0.5, 2) (0.5, -0.5, 2)
+  printRotated (0.5, 0.5, 2) (0.5, -0.5, 2)
+  printRotated (-0.5, 0.5, 2) (-0.5, -0.5, 2)
+
+  printRotated (0.5, 0.5, 1) (0.5, 0.5, 2)
+  printRotated (-0.5, 0.5, 1) (-0.5, 0.5, 2)
+  printRotated (0.5, -0.5, 1) (0.5, -0.5, 2)
+  printRotated (-0.5, -0.5, 1) (-0.5, -0.5, 2)
   
   liftIO $ stroke renderer
 
@@ -76,4 +83,24 @@ draw3DLine from to = do
   liftIO $ renderLine renderer 
     (getTranslatedPoint (get2DCoordinates from) w h) 
     (getTranslatedPoint (get2DCoordinates to) w h)
+
+rotateXZ :: (Double, Double, Double) -> Double -> Double -> (Double, Double, Double)
+rotateXZ (x, y, z) angle distance = 
+  (x*c - z'*s, 
+  y, 
+  x*s + z'*c + distance)
+  where
+    z'= z-distance
+    s = sin angle
+    c = cos angle
+
+rotateYZ :: (Double, Double, Double) -> Double -> Double -> (Double, Double, Double)
+rotateYZ (x, y, z) angle distance = 
+  (x,
+  y*c - z'*s, 
+  y*s + z'*c + distance)
+  where
+    z'= z-distance
+    s = sin angle
+    c = cos angle
 
