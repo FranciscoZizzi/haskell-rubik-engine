@@ -32,6 +32,7 @@ dependencies:
 - monomer
 - text
 - text-show
+- mtl
 
 ghc-options:
 - -Wall

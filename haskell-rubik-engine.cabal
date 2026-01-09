@@ -29,7 +29,8 @@ library
       Cube.DefaultCubes
       GUI.Main
       GUI.Types
-      GUI.Widgets.CubeView
+      GUI.Widgets.CoolCubeView
+      GUI.Widgets.FlatCubeView
   other-modules:
       Paths_haskell_rubik_engine
   autogen-modules:
@@ -46,6 +47,7 @@ library
     , hspec
     , lens
     , monomer
+    , mtl
     , text
     , text-show
     , vector
@@ -70,6 +72,7 @@ executable haskell-rubik-engine-exe
     , hspec
     , lens
     , monomer
+    , mtl
     , text
     , text-show
     , vector
@@ -95,6 +98,7 @@ test-suite haskell-rubik-engine-test
     , hspec
     , lens
     , monomer
+    , mtl
     , text
     , text-show
     , vector

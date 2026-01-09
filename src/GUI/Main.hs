@@ -3,7 +3,8 @@
 
 module GUI.Main (main) where
 
-import GUI.Widgets.CubeView (cubeView)
+import GUI.Widgets.FlatCubeView (flatCubeView)
+import GUI.Widgets.CoolCubeView
 import GUI.Types
 
 import Cube.Data
@@ -28,9 +29,14 @@ buildUI wenv model = mainPage
     mainPage = hstack [
       vstack (
         getMovementButtons (cube model)++[
-        spacer]),
+        spacer,
+        flatCubeView (cube model) (colorMap model) 150
+        ]),
       spacer,
-      cubeView (cube model) (colorMap model) 300
+      vstack [
+        defaultWidgetNode "lines" coolCubeWidget
+          `styleBasic` [width 400, height 400]
+      ]
       ] `styleBasic` [padding 10]
 
 handleEvent

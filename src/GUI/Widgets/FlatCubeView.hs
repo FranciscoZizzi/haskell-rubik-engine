@@ -1,4 +1,4 @@
-module GUI.Widgets.CubeView (cubeView) where
+module GUI.Widgets.FlatCubeView (flatCubeView) where
 
 import Cube.Data
 
@@ -24,8 +24,8 @@ cubeFace colors stickerSize = box (
   where
     stickerGrids = map (hgrid . map (sticker stickerSize)) colors
 
-cubeView :: (WidgetModel s, WidgetEvent e) => Cube -> Map.Map Int Color -> Double -> WidgetNode s e
-cubeView c colorMap_ cubeWidth = box (
+flatCubeView :: (WidgetModel s, WidgetEvent e) => Cube -> Map.Map Int Color -> Double -> WidgetNode s e
+flatCubeView c colorMap_ cubeWidth = box (
   hgrid [
       vgrid [cubeFace (getFaceColors L) stickerWidth],
       vgrid [
