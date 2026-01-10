@@ -130,31 +130,31 @@ drawPolygon (p1, p2, p3, p4) color = do
           x' = x/z
           y' = y/z
 
-draw3DLine :: (Double, Double, Double) -> (Double, Double, Double) -> Draw ()
-draw3DLine from to = do
-  renderer <- asks _renderer
-  w <- asks _width
-  h <- asks _height
-  _x <- asks _x
-  _y <- asks _y
-
-  let get2DCoordinates (x, y, z) = (x/z, y/z)
-  let translateCoordinates (x, y) _width _height = (_x+(x+1)/2*_width, _y+(y+1)/2*_height)
-  let getTranslatedPoint point w' h' = uncurry Point (translateCoordinates point w' h')
-
-  liftIO $ renderLine renderer 
-    (getTranslatedPoint (get2DCoordinates from) w h) 
-    (getTranslatedPoint (get2DCoordinates to) w h)
-
-rotateXZ :: (Double, Double, Double) -> Double -> Double -> (Double, Double, Double)
-rotateXZ (x, y, z) angle distance = 
-  (x*c - z'*s, 
-  y, 
-  x*s + z'*c + distance)
-  where
-    z'= z-distance
-    s = sin angle
-    c = cos angle
+-- draw3DLine :: (Double, Double, Double) -> (Double, Double, Double) -> Draw ()
+-- draw3DLine from to = do
+--   renderer <- asks _renderer
+--   w <- asks _width
+--   h <- asks _height
+--   _x <- asks _x
+--   _y <- asks _y
+--
+--   let get2DCoordinates (x, y, z) = (x/z, y/z)
+--   let translateCoordinates (x, y) _width _height = (_x+(x+1)/2*_width, _y+(y+1)/2*_height)
+--   let getTranslatedPoint point w' h' = uncurry Point (translateCoordinates point w' h')
+--
+--   liftIO $ renderLine renderer 
+--     (getTranslatedPoint (get2DCoordinates from) w h) 
+--     (getTranslatedPoint (get2DCoordinates to) w h)
+--
+-- rotateXZ :: (Double, Double, Double) -> Double -> Double -> (Double, Double, Double)
+-- rotateXZ (x, y, z) angle distance = 
+--   (x*c - z'*s, 
+--   y, 
+--   x*s + z'*c + distance)
+--   where
+--     z'= z-distance
+--     s = sin angle
+--     c = cos angle
 
 rotateYZ :: (Double, Double, Double) -> Double -> Double -> (Double, Double, Double)
 rotateYZ (x, y, z) angle distance = 
