@@ -57,7 +57,7 @@ isSolved cube = all (\(position, piece) -> compareFunction piece (cubePieces Map
     cubeWinState = winState cube
 
 getFaceSize :: Cube -> Int
-getFaceSize cube = getFaceSizeRec (Map.keys (pieces cube)) 0
+getFaceSize cube = 1 + getFaceSizeRec (Map.keys (pieces cube)) 0
 
 -- Utils --
 

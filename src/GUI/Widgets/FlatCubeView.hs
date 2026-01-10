@@ -39,7 +39,7 @@ flatCubeView c colorMap_ cubeWidth = box (
   )
   where
     getFaceColors face = [[getStickerColor $ getFaceSticker face $ getPiece (x,y) face | x <- [0..faceSize]] | y <- [0..faceSize]]
-    faceSize = getFaceSize c
+    faceSize = getFaceSize c - 1
     getPiece coords face = pieces c Map.! transform2dto3d coords face faceSize
     getFaceSticker face = List.find (\s -> face == orientation s)
     getStickerColor maybeSticker = case maybeSticker of
