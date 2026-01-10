@@ -7,8 +7,9 @@ import Control.Lens.TH
 import Monomer
 
 data AppModel = AppModel {
-  cube :: Cube,
-  colorMap :: Map.Map Int Color
+  _cube :: Cube,
+  _colorMap :: Map.Map Int Color,
+  _angle :: Int
 } deriving (Eq, Show)
 
 data AppEvent = 

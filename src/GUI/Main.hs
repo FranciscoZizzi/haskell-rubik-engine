@@ -14,6 +14,7 @@ import qualified Data.Map as Map
 import Data.Either
 import Monomer
 import Data.Text (pack)
+import Control.Lens
 
 getMovementButtons :: Cube -> [WidgetNode AppModel AppEvent]
 getMovementButtons c = buttons
@@ -28,15 +29,15 @@ buildUI wenv model = mainPage
   where
     mainPage = hstack [
       vstack (
-        getMovementButtons (cube model)++[
+        getMovementButtons (model ^. cube)++[
         spacer,
-        flatCubeView (cube model) (colorMap model) 150
+        flatCubeView (model ^. cube) (model ^. colorMap) 150
         ]),
       spacer,
       vstack [
-        defaultWidgetNode "lines" coolCubeWidget
-          `styleBasic` [width 400, height 400]
-      ]
+        defaultWidgetNode "lines" coolCubeWidget `styleBasic` [width 400, height 400]
+      ],
+      box $ hslider angle 0 100
       ] `styleBasic` [padding 10]
 
 handleEvent
@@ -48,8 +49,9 @@ handleEvent
 handleEvent wenv node model evt = case evt of
   AppInit -> []
   ApplyMove move -> [Model (AppModel {
-    cube=fromRight defaultCube (executeMovement (cube model) move),
-    colorMap=colorMap model})]
+    _cube=fromRight defaultCube (executeMovement (model ^. cube) move),
+    _colorMap=model ^. colorMap,
+    _angle=model ^. angle})]
 
 main :: IO ()
 main = do
@@ -62,6 +64,6 @@ main = do
       appFontDef "Regular" "./assets/fonts/Roboto-Regular.ttf",
       appInitEvent AppInit
       ]
-    model = AppModel defaultCube colorMap_
+    model = AppModel defaultCube colorMap_ 0 
     colorMap_ = Map.fromList [(0, white), (1, yellow), (2, red), (3, blue), (4, orange), (5, green)]
 

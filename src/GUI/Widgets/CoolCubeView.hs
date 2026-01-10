@@ -10,8 +10,9 @@ import Data.Default
 import Monomer
 import qualified Monomer.Lens as L
 import Monomer.Widgets.Single
+
 import GUI.Types
-import TextShow (printT)
+import Cube.Data
 
 data DrawEnv = DrawEnv {
   _renderer :: Renderer,
@@ -29,42 +30,42 @@ coolCubeWidget = createSingle () def {
 }
 
 renderCanvas :: WidgetEnv AppModel AppEvent -> WidgetNode AppModel AppEvent -> Renderer -> IO ()
-renderCanvas _ node renderer = do
+renderCanvas wenv node renderer = do
   let viewport = node ^. L.info . L.viewport
   let (Rect x y w h) = viewport
+  let model = wenv ^. L.model
 
-  -- Draw Background
   drawRect renderer viewport (Just $ rgb 20 20 20) Nothing
 
-  -- DRAWING LINES
   let env = DrawEnv renderer w h x y
-  runReaderT drawScene env
+  runReaderT (drawScene model) env
 
-drawScene :: Draw ()
-drawScene = do
+drawScene :: AppModel -> Draw ()
+drawScene model = do
   renderer <- asks _renderer
    
   let distanceFromScreen = 1.5 -- The distance from the center of the cube to the screen (z=0)
-  let sizeStickers = 3
-  let xzRotation = -pi/4
+  let sizeStickers = getFaceSize (model ^. cube)
+  let xzRotation = -(pi/5)
   let yzRotation = pi/6
   let xyRotation = 0
 
-  drawCube distanceFromScreen (xyRotation, xzRotation, yzRotation) sizeStickers
+  drawCube model distanceFromScreen (xyRotation, xzRotation, yzRotation) sizeStickers
 
   liftIO $ stroke renderer
 
-drawCube :: Double -> (Double, Double, Double) -> Int -> Draw ()
-drawCube distance (xyRotation, xzRotation, yzRotation) sizeStickers = do
-  drawFace (getLeftFace points) green
-  drawFace (getFrontFace points) red
-  drawFace (getTopFace points) white
-  drawFace (getRightFace points sizeStickers) blue
-  drawFace (getBottomFace points sizeStickers) yellow
-  drawFace (getBackFace points sizeStickers) orange
+drawCube :: AppModel -> Double -> (Double, Double, Double) -> Int -> Draw ()
+drawCube model distance (xyRotation, xzRotation, yzRotation) sizeStickers = do
+  drawFace (getLeftFace rotatedPoints) green
+  drawFace (getFrontFace rotatedPoints) red
+  drawFace (getTopFace rotatedPoints) white
+  drawFace (getRightFace rotatedPoints sizeStickers) blue
+  drawFace (getBottomFace rotatedPoints sizeStickers) yellow
+  drawFace (getBackFace rotatedPoints sizeStickers) orange
   where
     cornerPos = 0.5
-    points = [[[rotatePoint (((cornerPos,cornerPos,cornerPos) `vectorProduct` normalizePoint (fromIntegral i,fromIntegral j,fromIntegral k)) `vectorAddition` (0,0,distance))
+    rotatedPoints = map (map (map rotatePoint)) points
+    points = [[[((cornerPos,cornerPos,cornerPos) `vectorProduct` normalizePoint (fromIntegral i,fromIntegral j,fromIntegral k)) `vectorAddition` (0,0,distance)
       | i <- [0..sizeStickers]]
         | j <- [0..sizeStickers]]
           | k <- [0..sizeStickers]]
@@ -93,15 +94,14 @@ getRightFace grid size = reverse $ map (map (!! size)) grid
 drawFace :: [[(Double, Double, Double)]] -> Color -> Draw ()
 drawFace face color = do
   let size = length face - 1
-  forM_ [0..size-1] $ \r ->
-    forM_ [0..size-1] $ \c -> do
-      -- Define the 4 corners of a single sticker
-      let p1 = face !! r !! c
-      let p2 = face !! (r+1) !! c
-      let p3 = face !! (r+1) !! (c+1)
-      let p4 = face !! r !! (c+1)
+  forM_ [0..size-1] $ \row ->
+    forM_ [0..size-1] $ \col -> do
+      let p1 = face !! row !! col
+      let p2 = face !! (row+1) !! col
+      let p3 = face !! (row+1) !! (col+1)
+      let p4 = face !! row !! (col+1)
       
-      -- Project and Fill (See note below on lineTo)
+      -- traceShow face $ 
       drawPolygon (p1, p2, p3, p4) color
 
 drawPolygon :: ((Double, Double, Double), (Double, Double, Double), (Double, Double, Double), (Double, Double, Double)) -> Color-> Draw ()
