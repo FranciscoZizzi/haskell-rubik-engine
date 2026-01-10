@@ -146,15 +146,15 @@ drawPolygon (p1, p2, p3, p4) color = do
 --     (getTranslatedPoint (get2DCoordinates from) w h) 
 --     (getTranslatedPoint (get2DCoordinates to) w h)
 --
--- rotateXZ :: (Double, Double, Double) -> Double -> Double -> (Double, Double, Double)
--- rotateXZ (x, y, z) angle distance = 
---   (x*c - z'*s, 
---   y, 
---   x*s + z'*c + distance)
---   where
---     z'= z-distance
---     s = sin angle
---     c = cos angle
+rotateXZ :: (Double, Double, Double) -> Double -> Double -> (Double, Double, Double)
+rotateXZ (x, y, z) angle distance = 
+  (x*c - z'*s, 
+  y, 
+  x*s + z'*c + distance)
+  where
+    z'= z-distance
+    s = sin angle
+    c = cos angle
 
 rotateYZ :: (Double, Double, Double) -> Double -> Double -> (Double, Double, Double)
 rotateYZ (x, y, z) angle distance = 
