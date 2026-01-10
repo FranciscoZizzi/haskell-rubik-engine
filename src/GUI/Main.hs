@@ -35,9 +35,14 @@ buildUI wenv model = mainPage
         ]),
       spacer,
       vstack [
-        defaultWidgetNode "lines" coolCubeWidget `styleBasic` [width 400, height 400]
+        defaultWidgetNode "lines" coolCubeWidget `styleBasic` [width 400, height 400],
+        spacer,
+        hslider yzRotation 0 360 `styleBasic` [height 10, width 400]
       ],
-      box $ hslider angle 0 100
+      spacer,
+      vstack [
+        vslider xzRotation 0 360 `styleBasic` [height 400]
+      ]
       ] `styleBasic` [padding 10]
 
 handleEvent
@@ -48,10 +53,7 @@ handleEvent
   -> [AppEventResponse AppModel AppEvent]
 handleEvent wenv node model evt = case evt of
   AppInit -> []
-  ApplyMove move -> [Model (AppModel {
-    _cube=fromRight defaultCube (executeMovement (model ^. cube) move),
-    _colorMap=model ^. colorMap,
-    _angle=model ^. angle})]
+  ApplyMove move -> [Model $ model & cube .~ fromRight defaultCube (executeMovement (model ^. cube) move)]
 
 main :: IO ()
 main = do
@@ -64,6 +66,6 @@ main = do
       appFontDef "Regular" "./assets/fonts/Roboto-Regular.ttf",
       appInitEvent AppInit
       ]
-    model = AppModel defaultCube colorMap_ 0 
+    model = AppModel defaultCube colorMap_ 0 0
     colorMap_ = Map.fromList [(0, white), (1, yellow), (2, red), (3, blue), (4, orange), (5, green)]
 

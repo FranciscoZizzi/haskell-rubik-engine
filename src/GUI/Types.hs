@@ -9,7 +9,8 @@ import Monomer
 data AppModel = AppModel {
   _cube :: Cube,
   _colorMap :: Map.Map Int Color,
-  _angle :: Int
+  _yzRotation :: Double,
+  _xzRotation :: Double
 } deriving (Eq, Show)
 
 data AppEvent = 
