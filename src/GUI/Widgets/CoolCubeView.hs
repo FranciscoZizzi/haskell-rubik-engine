@@ -46,7 +46,7 @@ drawScene = do
    
   let distanceFromScreen = 1.5 -- The distance from the center of the cube to the screen (z=0)
   let sizeStickers = 3
-  let xzRotation = -pi/5
+  let xzRotation = -pi/4
   let yzRotation = pi/6
   let xyRotation = 0
 
@@ -76,10 +76,10 @@ getFrontFace :: [[[(Double, Double, Double)]]] -> [[(Double, Double, Double)]]
 getFrontFace grid = grid !! 0
 
 getBackFace :: [[[(Double, Double, Double)]]] -> Int -> [[(Double, Double, Double)]]
-getBackFace grid size = grid !! size
+getBackFace grid size = reverse $ grid !! size
 
 getTopFace :: [[[(Double, Double, Double)]]] -> [[(Double, Double, Double)]]
-getTopFace grid = map (!! 0) grid
+getTopFace grid = reverse $ map (!! 0) grid
 
 getBottomFace :: [[[(Double, Double, Double)]]] -> Int -> [[(Double, Double, Double)]]
 getBottomFace grid size = map (!! size) grid
@@ -88,7 +88,7 @@ getLeftFace :: [[[(Double, Double, Double)]]] -> [[(Double, Double, Double)]]
 getLeftFace grid = map (map (!! 0)) grid
 
 getRightFace :: [[[(Double, Double, Double)]]] -> Int -> [[(Double, Double, Double)]]
-getRightFace grid size = map (map (!! size)) grid
+getRightFace grid size = reverse $ map (map (!! size)) grid
 
 drawFace :: [[(Double, Double, Double)]] -> Color -> Draw ()
 drawFace face color = do
@@ -118,17 +118,27 @@ drawPolygon (p1, p2, p3, p4) color = do
   let p3' = projectPoint p3
   let p4' = projectPoint p4
 
-  liftIO $ do
+  if isVisibleFace p1 p2 p3 
+  then liftIO $ do
     setStrokeColor renderer color
     setStrokeWidth renderer 1
     drawTriangle renderer p1' p2' p3' (Just color)
     drawTriangle renderer p1' p3' p4' (Just color)
+  else liftIO $ do
+    setStrokeWidth renderer 1 -- idk how to make it do nothing hehe :-)
   where 
     project (x, y, z) xOffset yOffset w h =
       Point (xOffset + (x'+1)/2*w) (yOffset + (y'+1)/2*h)
         where
           x' = x/z
           y' = y/z
+
+isVisibleFace :: (Double, Double, Double) -> (Double, Double, Double) -> (Double, Double, Double) -> Bool
+isVisibleFace p1 p2 p3 = (n `dotProduct` p1) < 0
+  where
+    a = p2 `vectorSubtraction` p1
+    b = p3 `vectorSubtraction` p1
+    n = a `crossProduct` b
 
 -- draw3DLine :: (Double, Double, Double) -> (Double, Double, Double) -> Draw ()
 -- draw3DLine from to = do
@@ -176,9 +186,17 @@ rotateXY (x, y, z) angle =
     s = sin angle
     c = cos angle
 
+crossProduct :: (Double, Double, Double) -> (Double, Double, Double) -> (Double, Double, Double)
+crossProduct (a1, a2, a3) (b1, b2, b3) = (a2 * b3 - a3 * b2, a3 * b1 - a1 * b3, a1 * b2 - a2 * b1)
+
 vectorProduct :: (Double, Double, Double) -> (Double, Double, Double) -> (Double, Double, Double)
 vectorProduct (a1, a2, a3) (b1, b2, b3) = (a1 * b1, a2 * b2, a3 * b3)
 
 vectorAddition :: (Double, Double, Double) -> (Double, Double, Double) -> (Double, Double, Double)
 vectorAddition (a1, a2, a3) (b1, b2, b3) = (a1 + b1, a2 + b2, a3 + b3)
 
+vectorSubtraction :: (Double, Double, Double) -> (Double, Double, Double) -> (Double, Double, Double)
+vectorSubtraction (a1, a2, a3) (b1, b2, b3) = (a1 - b1, a2 - b2, a3 - b3)
+
+dotProduct :: (Double, Double, Double) -> (Double, Double, Double) -> Double
+dotProduct (a1, a2, a3) (b1, b2, b3) = a1*b1 + a2*b2 + a3*b3
