@@ -46,16 +46,16 @@ drawScene model = do
    
   let distanceFromScreen = 1.5 -- The distance from the center of the cube to the screen (z=0)
   let sizeStickers = getFaceSize (model ^. cube)
-  let xzRotation = -(pi/5)
-  let yzRotation = pi/6
+  let _xzRotation = (model ^. xzRotation) * pi / 180
+  let _yzRotation = (model ^. yzRotation) * pi / 180
   let xyRotation = 0
 
-  drawCube model distanceFromScreen (xyRotation, xzRotation, yzRotation) sizeStickers
+  drawCube model distanceFromScreen (xyRotation, _xzRotation, _yzRotation) sizeStickers
 
   liftIO $ stroke renderer
 
 drawCube :: AppModel -> Double -> (Double, Double, Double) -> Int -> Draw ()
-drawCube model distance (xyRotation, xzRotation, yzRotation) sizeStickers = do
+drawCube model distance (_xyRotation, _xzRotation, _yzRotation) sizeStickers = do
   drawFace (getLeftFace rotatedPoints) green
   drawFace (getFrontFace rotatedPoints) red
   drawFace (getTopFace rotatedPoints) white
@@ -71,7 +71,7 @@ drawCube model distance (xyRotation, xzRotation, yzRotation) sizeStickers = do
           | k <- [0..sizeStickers]]
     s = fromIntegral sizeStickers
     normalizePoint (x, y, z) = ((2*x)/s - 1, (2*y)/s - 1, (2*z)/s - 1)
-    rotatePoint point = rotateXY (rotateYZ (rotateXZ point xzRotation distance) yzRotation distance) xyRotation
+    rotatePoint point = rotateXY (rotateYZ (rotateXZ point _xzRotation distance) _yzRotation distance) _xyRotation
 
 getFrontFace :: [[[(Double, Double, Double)]]] -> [[(Double, Double, Double)]]
 getFrontFace grid = grid !! 0

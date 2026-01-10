@@ -37,11 +37,11 @@ buildUI wenv model = mainPage
       vstack [
         defaultWidgetNode "lines" coolCubeWidget `styleBasic` [width 400, height 400],
         spacer,
-        hslider yzRotation 0 360 `styleBasic` [height 10, width 400]
+        hslider xzRotation (-180) 180 `styleBasic` [height 10, width 400]
       ],
       spacer,
       vstack [
-        vslider xzRotation 0 360 `styleBasic` [height 400]
+        vslider yzRotation (-180) 180 `styleBasic` [height 400]
       ]
       ] `styleBasic` [padding 10]
 
@@ -66,6 +66,6 @@ main = do
       appFontDef "Regular" "./assets/fonts/Roboto-Regular.ttf",
       appInitEvent AppInit
       ]
-    model = AppModel defaultCube colorMap_ 0 0
+    model = AppModel defaultCube colorMap_ 30 (-40)
     colorMap_ = Map.fromList [(0, white), (1, yellow), (2, red), (3, blue), (4, orange), (5, green)]
 
